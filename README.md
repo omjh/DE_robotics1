@@ -1,9 +1,14 @@
 # DE_robotics1
-Design Engineering Robotics 1 module coursework /s/s
-Created by: Anusha Sonthalia /s/s
-Contributor: Oliver Hoare, Sophie Owen, Francesca Suer, Laerke Mop Rasmussen, Yeonjin Kim /s/s
-Deate Created: Sunday 24th Feb 2019 /s/s
-Date Last Edited: Sunday 24th Feb 2019 /s/s
+Design Engineering Robotics 1 module coursework
+
+Created by: Anusha Sonthalia
+
+Contributor: Oliver Hoare, Sophie Owen, Francesca Suer, Laerke Mop Rasmussen, Yeonjin Kim
+
+Deate Created: Sunday 24th Feb 2019
+
+Date Last Edited: Sunday 24th Feb 2019
+
 
 ## Description
 [tbc]
