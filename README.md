@@ -15,6 +15,7 @@ Date Last Edited: Sunday 24th Feb 2019
 
 ## Organisation
 Code_Snippets folder contains all parts of code written by team members in the project.
+
 Final_Submission contains code to be submitted for assessment.
 
 ## Installation
