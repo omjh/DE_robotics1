@@ -5,7 +5,7 @@ Created by: Anusha Sonthalia
 
 Contributors: Oliver Hoare, Sophie Owen, Francesca Suer, Laerke Mop Rasmussen, Yeonjin Kim
 
-Deate Created: Sunday 24th Feb 2019
+Date Created: Sunday 24th Feb 2019
 
 Date Last Edited: Sunday 24th Feb 2019
 
