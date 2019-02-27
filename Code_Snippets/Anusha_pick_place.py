@@ -274,7 +274,6 @@ def main():
     l = 'left'
     r = 'right'
 
-    hover_distance = 0.20 # meters
     # Starting Joint angles for left arm
     starting_joint_angles = {'left_w0': 0.6699952259595108,
                              'left_w1': 1.030009435085784,
@@ -283,8 +282,8 @@ def main():
                              'left_e1': 1.9400238130755056,
                              'left_s0': -0.08000397926829805,
                              'left_s1': -0.9999781166910306}
-    hocl = PickAndPlace(l, hover_distance)
-    hocr = PickAndPlace(r, hover_distance)
+    hocl = PickAndPlace(l)
+    hocr = PickAndPlace(r)
     # An orientation for gripper fingers to be overhead and parallel to the obj
     overhead_orientation = Quaternion(
                              x=-0.0249590815779,
