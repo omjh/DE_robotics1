@@ -57,9 +57,10 @@ from baxter_core_msgs.srv import (
 import baxter_interface
 
 class PickAndPlace(object):
-    def __init__(self, limb, hover_distance = 0.15, verbose=True):
+    def __init__(self, limb, pick_hover = 0.15, place_hover = 0.25 verbose=True):
         self._limb_name = limb # string
-        self._hover_distance = hover_distance # in meters
+        self._pick_hover = pick_hover # in meters
+        self._place_hover = place_hover # in meters
         #how far to hover above brick before pick to prevent knock over
         self._verbose = verbose # bool
         self._limb = baxter_interface.Limb(limb)
@@ -84,7 +85,7 @@ class PickAndPlace(object):
         print("Running. Ctrl-c to quit")
 
     def ik_request(self, pose):
-        hdr = Header(stamp=rospy.Time.now(), frame_id='base')
+        hdr = Header(stamp=rospy.Time.now(), frame_id='torso')
         ikreq = SolvePositionIKRequest()
         ikreq.pose_stamp.append(PoseStamped(header=hdr, pose=pose))
         try:
@@ -129,11 +130,33 @@ class PickAndPlace(object):
         self._gripper.close()
         rospy.sleep(1.0)
 
-    def _approach(self, pose):
+    def _pick_approach(self, pose):
         approach = copy.deepcopy(pose)
         # approach with a pose the hover-distance above the requested pose
-        approach.position.z = approach.position.z + self._hover_distance
+        approach.position.z = approach.position.z + self._pick_hover
         joint_angles = self.ik_request(approach)
+        self._guarded_move_to_joint_position(joint_angles)
+
+    def _place_approach(self, pose):
+        approach = copy.deepcopy(pose)
+        # approach with a pose the hover-distance above the requested pose
+        approach.position.z = approach.position.z + self._place_hover
+        joint_angles = self.ik_request(approach)
+        self._guarded_move_to_joint_position(joint_angles)
+
+    def _lift(self, pose):
+        # retrieve current pose from endpoint
+        current_pose = self._limb.endpoint_pose()
+        ik_pose = Pose()
+        ik_pose.position.x = current_pose['position'].x
+        ik_pose.position.y = current_pose['position'].y
+        ik_pose.position.z = pose.position.z + self._place_hover
+        ik_pose.orientation.x = current_pose['orientation'].x
+        ik_pose.orientation.y = current_pose['orientation'].y
+        ik_pose.orientation.z = current_pose['orientation'].z
+        ik_pose.orientation.w = current_pose['orientation'].w
+        joint_angles = self.ik_request(ik_pose)
+        # servo up from current pose
         self._guarded_move_to_joint_position(joint_angles)
 
     def _retract(self):
@@ -142,7 +165,7 @@ class PickAndPlace(object):
         ik_pose = Pose()
         ik_pose.position.x = current_pose['position'].x
         ik_pose.position.y = current_pose['position'].y
-        ik_pose.position.z = current_pose['position'].z + self._hover_distance
+        ik_pose.position.z = current_pose['position'].z + self._pick_hover
         ik_pose.orientation.x = current_pose['orientation'].x
         ik_pose.orientation.y = current_pose['orientation'].y
         ik_pose.orientation.z = current_pose['orientation'].z
@@ -160,7 +183,7 @@ class PickAndPlace(object):
         # open the gripper
         self.gripper_open()
         # servo above pose
-        self._approach(pose)
+        self._pick_approach(pose)
         # servo to pose
         self._servo_to_pose(pose)
         # close gripper
@@ -169,8 +192,9 @@ class PickAndPlace(object):
         self._retract()
 
     def place(self, pose):
+        self._lift(pose)
         # servo above pose
-        self._approach(pose)
+        self._place_approach(pose)
         # servo to pose
         self._servo_to_pose(pose)
         # open the gripper
@@ -240,7 +264,7 @@ def main():
     # Load Gazebo Models via Spawning Services
     # Note that the models reference is the /world frame
     # and the IK operates with respect to the /base frame
-    load_gazebo_models()
+    # load_gazebo_models()
     # Remove models from the scene on shutdown
     rospy.on_shutdown(delete_gazebo_models)
 
@@ -268,33 +292,39 @@ def main():
                              z=0.00737916180073,
                              w=0.00486450832011)
 
-    lvsp = Pose(
+    lv_pick = Pose(
         position=Point(x=0., y=0., z=-0.),
-        orientation=overhead_orientation))
-    rvsp = Pose(
+        orientation=overhead_orientation)
+    rv_pick = Pose(
         position=Point(x=0., y=0., z=-0.),
-        orientation=overhead_orientation))
-    lhsp = Pose(
+        orientation=overhead_orientation)
+    lh_pick = Pose(
+        position=Point(x=0.1, y=0, z=0.125312),
+        orientation=overhead_orientation)
+    rh_pick = Pose(
         position=Point(x=0., y=0., z=-0.),
-        orientation=overhead_orientation))
-    rhsp = Pose(
-        position=Point(x=0., y=0., z=-0.),
-        orientation=overhead_orientation))
+        orientation=overhead_orientation)
 
+    base = 3
+    height = 1
 
-    block_posesl, block_posesr = house_of_cards_duo(base, height)
+    # l_block_poses, r_block_poses = house_of_cards_duo(base, height)
+    l_block_poses = list()
+    L_block_poses.append(Pose(
+        position=Point(x=0.3, y=0, z=0.125312),
+        orientation=overhead_orientation))
 
     # Move to the desired starting angles
-    pnp.move_to_start(starting_joint_angles)
+    hocl.move_to_start(starting_joint_angles)
 
     i = 0
-    
+
     while not rospy.is_shutdown() && i > height:
         print("\nPicking...")
-        pnp.pick(block_poses[idx])
+        hocl.pick(lh_pick)
         print("\nPlacing...")
-        idx = (idx+1) % len(block_poses)
-        pnp.place(block_poses[idx])
+        i = ++
+        hocl.place(l_block_poses[i])
     return 0
 
 if __name__ == '__main__':
