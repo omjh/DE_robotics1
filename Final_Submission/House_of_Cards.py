@@ -20,7 +20,7 @@ def main():
                     'left_s1': -0.9999781166910306}
     right_start = {'right_w0': -0.6699952259595108,
                     'right_w1': 1.030009435085784,
-                    'right_w2': -0.4999997247485215,
+                    'right_w2': 0.4999997247485215,
                     'right_e0': 1.189968899785275,
                     'right_e1': 0.6700238130755056,
                     'right_s0': 0.08000397926829805,
@@ -39,16 +39,16 @@ def main():
 
     lv_pick = Pose(
         position=Point(x=0., y=0., z=-0.),
-        orientation=overhead_orientation)
+        orientation=orientation)
     rv_pick = Pose(
         position=Point(x=0., y=0., z=-0.),
-        orientation=overhead_orientation)
+        orientation=orientation)
     lh_pick = Pose(
         position=Point(x=0.1, y=0, z=0.125312),
-        orientation=overhead_orientation)
+        orientation=orientation)
     rh_pick = Pose(
         position=Point(x=0., y=0., z=-0.),
-        orientation=overhead_orientation)
+        orientation=orientation)
 
     # base and height for the generated house of cards
     base = 3
