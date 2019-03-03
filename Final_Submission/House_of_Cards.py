@@ -11,13 +11,20 @@ def main():
     rospy.wait_for_message("/robot/sim/started", Empty)
 
     # Starting Joint angles for both arms
-    starting_joint_angles = {'left_w0': 0.6699952259595108,
-                             'left_w1': 1.030009435085784,
-                             'left_w2': -0.4999997247485215,
-                             'left_e0': -1.189968899785275,
-                             'left_e1': 1.9400238130755056,
-                             'left_s0': -0.08000397926829805,
-                             'left_s1': -0.9999781166910306}
+    left_start = {'left_w0': 0.6699952259595108,
+                    'left_w1': 1.030009435085784,
+                    'left_w2': -0.4999997247485215,
+                    'left_e0': -1.189968899785275,
+                    'left_e1': 0.6700238130755056,
+                    'left_s0': -0.08000397926829805,
+                    'left_s1': -0.9999781166910306}
+    right_start = {'right_w0': -0.6699952259595108,
+                    'right_w1': 1.030009435085784,
+                    'right_w2': -0.4999997247485215,
+                    'right_e0': 1.189968899785275,
+                    'right_e1': 0.6700238130755056,
+                    'right_s0': 0.08000397926829805,
+                    'right_s1': -0.9999781166910306}
 
     # Two pick and place opjects for each of DENIRO's arms
     hocl = PickAndPlace('left')
@@ -50,8 +57,11 @@ def main():
     block_poses = house_builder(base, height)
 
     # move to the desired starting angles
-    hocl.move_to_start(starting_joint_angles)
-    hocr.move_to_start(starting_joint_angles)
+    hocl.move_to_start(left_start)
+    hocr.move_to_start(right_start)
+
+    # spawn environment
+    load_tables()
 
     # loop to pick and place the entire structure
     i = 0
