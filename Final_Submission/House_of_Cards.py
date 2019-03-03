@@ -43,27 +43,56 @@ def main():
         position=Point(x=0., y=0., z=-0.),
         orientation=overhead_orientation)
 
+    # base and height for the generated house of cards
     base = 3
     height = 1
 
-    # l_block_poses, r_block_poses = house_of_cards_duo(base, height)
-    L_block_poses = list()
-    L_block_poses.append(Pose(
-        position=Point(x=0.3, y=0, z=0.125312),
-        orientation=overhead_orientation))
+    block_poses = house_builder(base, height)
 
-    # Move to the desired starting angles
+    # move to the desired starting angles
     hocl.move_to_start(starting_joint_angles)
+    hocr.move_to_start(starting_joint_angles)
 
+    # loop to pick and place the entire structure
     i = 0
 
     while not rospy.is_shutdown() & i > height:
-        print("\nPicking...")
-        hocl.pick(lh_pick)
-        print("\nPlacing...")
-        #i = ++
-        hocl.place(L_block_poses[i])
-    return 0
+        for j in range(block_poses[i]):
+            if i % 2:
+                print("\nHorizontal block row")
+                if j % 2:
+                    print("\nUsing left")
+                    #spawn
+                    print("\nPicking...")
+                    hocl.pick(lh_pick)
+                    print("\nPlacing...")
+                    hocl.pick(block_poses[i][j])
+                else:
+                    print("\nUsing right")
+                    #spawn
+                    print("\nPicking...")
+                    hocr.pick(rh_pick)
+                    print("\nPlacing...")
+                    hocr.pick(block_poses[i][j])
+            else:
+                print("\nVertical block row")
+                if j % 2:
+                    print("\nUsing left")
+                    #spawn
+                    print("\nPicking...")
+                    hocl.pick(lv_pick)
+                    print("\nPlacing...")
+                    hocl.pick(block_poses[i][j])
+                else:
+                    print("\nUsing right")
+                    #spawn
+                    print("\nPicking...")
+                    hocr.pick(rv_pick)
+                    print("\nPlacing...")
+                    hocr.pick(block_poses[i][j])
+            j += 1
+        i += 1
+    return
 
 if __name__ == '__main__':
     sys.exit(main())
